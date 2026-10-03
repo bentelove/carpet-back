@@ -1,0 +1,2682 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TÖPP API",
+    "description": "REST API интернет-магазина ковров; цены в целых рублях. /docs для интерактивного OpenAPI.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "summary": "List Products",
+        "operationId": "list_products_api_v1_products_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "style",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Style"
+            }
+          },
+          {
+            "name": "colorCode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Colorcode"
+            }
+          },
+          {
+            "name": "countryCode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Countrycode"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Size"
+            }
+          },
+          {
+            "name": "lengthCm",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lengthcm"
+            }
+          },
+          {
+            "name": "widthCm",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Widthcm"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Minprice"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Maxprice"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(popular|newest|price_asc|price_desc|size|discount)$",
+              "default": "newest",
+              "title": "Sort"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/filters": {
+      "get": {
+        "summary": "Filters",
+        "operationId": "filters_api_v1_catalog_filters_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{slug}": {
+      "get": {
+        "summary": "Product Detail",
+        "operationId": "product_detail_api_v1_products__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carts": {
+      "post": {
+        "summary": "Create Cart",
+        "operationId": "create_cart_api_v1_carts_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cart": {
+      "get": {
+        "summary": "Get Cart",
+        "operationId": "get_cart_api_v1_cart_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cart/items": {
+      "post": {
+        "summary": "Add Item",
+        "operationId": "add_item_api_v1_cart_items_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemIn"
+              },
+              "example": {
+                "variantId": "00000000-0000-4000-8000-000000000000",
+                "quantity": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cart/items/{item_id}": {
+      "patch": {
+        "summary": "Update Item",
+        "operationId": "update_item_api_v1_cart_items__item_id__patch",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuantityIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete Item",
+        "operationId": "delete_item_api_v1_cart_items__item_id__delete",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/favorites": {
+      "get": {
+        "summary": "Favorites",
+        "operationId": "favorites_api_v1_favorites_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/favorites/{product_id}": {
+      "put": {
+        "summary": "Favorite Add",
+        "operationId": "favorite_add_api_v1_favorites__product_id__put",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Product Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Favorite Delete",
+        "operationId": "favorite_delete_api_v1_favorites__product_id__delete",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Product Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/checkout/options": {
+      "get": {
+        "summary": "Options",
+        "operationId": "options_api_v1_checkout_options_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkout/quote": {
+      "post": {
+        "summary": "Quote",
+        "operationId": "quote_api_v1_checkout_quote_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteIn"
+              },
+              "example": {
+                "address": {
+                  "city": "Москва",
+                  "street": "Лесная",
+                  "house": "1"
+                },
+                "deliveryMethod": "manual_delivery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders": {
+      "post": {
+        "summary": "Create Order",
+        "operationId": "create_order_api_v1_orders_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderIn"
+              },
+              "example": {
+                "customerName": "Иван",
+                "phone": "+79991234567",
+                "address": {
+                  "city": "Москва",
+                  "street": "Лесная",
+                  "house": "1"
+                },
+                "deliveryMethod": "manual_delivery",
+                "paymentMethod": "on_delivery",
+                "personalDataConsent": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "example": {
+                  "orderId": "00000000-0000-4000-8000-000000000000",
+                  "orderNumber": "f9126af6-bced-439a-a050-a77d9c1c570b",
+                  "status": "new",
+                  "currency": "RUB",
+                  "subtotal": 12990,
+                  "delivery": 0,
+                  "total": 12990,
+                  "deliveryMethod": "manual_delivery",
+                  "paymentMethod": "on_delivery",
+                  "items": [
+                    {
+                      "variantId": "00000000-0000-4000-8000-000000000000",
+                      "name": "Лунна",
+                      "sku": "SKU-001",
+                      "sizeLabel": "160 × 230 см",
+                      "unitPrice": 12990,
+                      "quantity": 1,
+                      "lineTotal": 12990
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cartBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/products": {
+      "get": {
+        "summary": "Products",
+        "operationId": "products_api_v1_admin_products_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Product Create",
+        "operationId": "product_create_api_v1_admin_products_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/products/{id}": {
+      "get": {
+        "summary": "Product Detail",
+        "operationId": "product_detail_api_v1_admin_products__id__get",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Product Patch",
+        "operationId": "product_patch_api_v1_admin_products__id__patch",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Product Delete",
+        "operationId": "product_delete_api_v1_admin_products__id__delete",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/products/{id}/variants": {
+      "post": {
+        "summary": "Variant Create",
+        "operationId": "variant_create_api_v1_admin_products__id__variants_post",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VariantInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/variants/{id}": {
+      "patch": {
+        "summary": "Variant Patch",
+        "operationId": "variant_patch_api_v1_admin_variants__id__patch",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VariantPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Variant Delete",
+        "operationId": "variant_delete_api_v1_admin_variants__id__delete",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders": {
+      "get": {
+        "summary": "Orders",
+        "operationId": "orders_api_v1_admin_orders_get",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{id}": {
+      "get": {
+        "summary": "Order Detail",
+        "operationId": "order_detail_api_v1_admin_orders__id__get",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders/{id}/status": {
+      "patch": {
+        "summary": "Status Change",
+        "operationId": "status_change_api_v1_admin_orders__id__status_patch",
+        "security": [
+          {
+            "adminBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт цен, остатков или условий",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": {
+                    "code": "CART_CHANGED",
+                    "message": "Цены или остатки изменились",
+                    "details": {
+                      "items": [
+                        {
+                          "variantId": "00000000-0000-4000-8000-000000000000",
+                          "available": 0,
+                          "expectedPrice": 12990,
+                          "currentPrice": 13990
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Address": {
+        "properties": {
+          "city": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "City"
+          },
+          "street": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Street"
+          },
+          "house": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "House"
+          },
+          "apartment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apartment"
+          },
+          "postalCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{6}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Postalcode"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "city",
+          "street",
+          "house"
+        ],
+        "title": "Address"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Image": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2083,
+            "minLength": 1,
+            "format": "uri",
+            "title": "Url"
+          },
+          "alt": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Alt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "alt"
+        ],
+        "title": "Image"
+      },
+      "ItemIn": {
+        "properties": {
+          "variantId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F-]{36}$",
+            "title": "Variantid"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Quantity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "variantId",
+          "quantity"
+        ],
+        "title": "ItemIn"
+      },
+      "OrderIn": {
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "deliveryMethod": {
+            "type": "string",
+            "const": "manual_delivery",
+            "title": "Deliverymethod"
+          },
+          "customerName": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 2,
+            "title": "Customername"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9 ()-]{10,25}$",
+            "title": "Phone"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": [
+              "on_delivery",
+              "manual_confirmation"
+            ],
+            "title": "Paymentmethod"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "personalDataConsent": {
+            "type": "boolean",
+            "const": true,
+            "title": "Personaldataconsent"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "address",
+          "deliveryMethod",
+          "customerName",
+          "phone",
+          "paymentMethod",
+          "personalDataConsent"
+        ],
+        "title": "OrderIn"
+      },
+      "ProductInput": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "maxLength": 160,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 250,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000,
+            "title": "Description",
+            "default": ""
+          },
+          "style": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Style"
+          },
+          "color": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Color"
+          },
+          "colorCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Colorcode"
+          },
+          "countryCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Countrycode"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Images"
+          },
+          "badge": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge"
+          },
+          "isActive": {
+            "type": "boolean",
+            "title": "Isactive",
+            "default": true
+          },
+          "popularity": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Popularity",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "slug",
+          "name",
+          "style",
+          "color"
+        ],
+        "title": "ProductInput"
+      },
+      "ProductPatch": {
+        "properties": {
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000,
+            "title": "Description",
+            "default": ""
+          },
+          "style": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "colorCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Colorcode"
+          },
+          "countryCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Countrycode"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Images"
+          },
+          "badge": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge"
+          },
+          "isActive": {
+            "type": "boolean",
+            "title": "Isactive",
+            "default": true
+          },
+          "popularity": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Popularity",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProductPatch"
+      },
+      "QuantityIn": {
+        "properties": {
+          "quantity": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Quantity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "quantity"
+        ],
+        "title": "QuantityIn"
+      },
+      "QuoteIn": {
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "deliveryMethod": {
+            "type": "string",
+            "const": "manual_delivery",
+            "title": "Deliverymethod"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "address",
+          "deliveryMethod"
+        ],
+        "title": "QuoteIn"
+      },
+      "StatusIn": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "confirmed",
+              "cancelled",
+              "fulfilled"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "StatusIn"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VariantInput": {
+        "properties": {
+          "sku": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Sku"
+          },
+          "sizeLabel": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Sizelabel"
+          },
+          "sizeCode": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$",
+            "title": "Sizecode"
+          },
+          "lengthCm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lengthcm"
+          },
+          "widthCm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Widthcm"
+          },
+          "diameterCm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diametercm"
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Price"
+          },
+          "oldPrice": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldprice"
+          },
+          "stockQuantity": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Stockquantity"
+          },
+          "isActive": {
+            "type": "boolean",
+            "title": "Isactive",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sku",
+          "sizeLabel",
+          "sizeCode",
+          "price",
+          "stockQuantity"
+        ],
+        "title": "VariantInput"
+      },
+      "VariantPatch": {
+        "properties": {
+          "sku": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sku"
+          },
+          "sizeLabel": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sizelabel"
+          },
+          "sizeCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sizecode"
+          },
+          "lengthCm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lengthcm"
+          },
+          "widthCm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Widthcm"
+          },
+          "diameterCm": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diametercm"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "oldPrice": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldprice"
+          },
+          "stockQuantity": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stockquantity"
+          },
+          "isActive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isactive"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "VariantPatch"
+      }
+    },
+    "securitySchemes": {
+      "cartBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Токен из POST /api/v1/carts"
+      },
+      "adminBasic": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "ADMIN_USERNAME и пароль администратора"
+      }
+    }
+  }
+}
