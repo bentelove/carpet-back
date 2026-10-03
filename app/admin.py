@@ -66,6 +66,10 @@ def variant_create(id:str,data:VariantInput,db:Session=Depends(get_db)):
               old_price=data.oldPrice,stock_quantity=data.stockQuantity,is_active=data.isActive)
     db.add(v);save(db);return variant_out(v)
 
+@router.get('/variants/{id}')
+def variant_detail(id:str,db:Session=Depends(get_db)):
+    return variant_out(variant_or_404(db,id))
+
 @router.patch('/variants/{id}')
 def variant_patch(id:str,data:VariantPatch,db:Session=Depends(get_db)):
     v=variant_or_404(db,id)
