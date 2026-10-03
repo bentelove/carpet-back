@@ -1,0 +1,111 @@
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+enum OrderStatus {
+ new
+ confirmed
+ cancelled
+ fulfilled
+}
+model Product {
+ id String @id @default(uuid())
+ slug String @unique
+ name String
+ description String @default("")
+ style String
+ color String
+ colorCode String?
+ countryCode String?
+ images Json
+ badge String?
+ isActive Boolean @default(true)
+ popularity Int @default(0)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ variants Variant[]
+ favorites Favorite[]
+}
+model Variant {
+ id String @id @default(uuid())
+ productId String
+ product Product @relation(fields:[productId], references:[id])
+ sku String @unique
+ sizeLabel String
+ sizeCode String
+ lengthCm Int?
+ widthCm Int?
+ diameterCm Int?
+ price Int
+ oldPrice Int?
+ stockQuantity Int @default(0)
+ isActive Boolean @default(true)
+ cartItems CartItem[]
+ orderItems OrderItem[]
+ @@index([productId])
+ @@index([sizeCode])
+}
+model Cart {
+ id String @id @default(uuid())
+ tokenHash String @unique
+ expiresAt DateTime
+ items CartItem[]
+ favorites Favorite[]
+ orders Order[]
+}
+model CartItem {
+ id String @id @default(uuid())
+ cartId String
+ variantId String
+ quantity Int
+ unitPrice Int
+ cart Cart @relation(fields:[cartId], references:[id], onDelete:Cascade)
+ variant Variant @relation(fields:[variantId], references:[id])
+ @@unique([cartId,variantId])
+}
+model Favorite {
+ id String @id @default(uuid())
+ cartId String
+ productId String
+ cart Cart @relation(fields:[cartId], references:[id], onDelete:Cascade)
+ product Product @relation(fields:[productId], references:[id])
+ @@unique([cartId,productId])
+}
+model Order {
+ id String @id @default(uuid())
+ number String @unique @default(uuid())
+ cartId String
+ idempotencyKey String
+ requestHash String
+ status OrderStatus @default(new)
+ customerName String
+ phone String
+ email String?
+ address Json
+ deliveryMethod String
+ paymentMethod String
+ comment String?
+ subtotal Int
+ delivery Int
+ total Int
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ cart Cart @relation(fields:[cartId], references:[id])
+ items OrderItem[]
+ @@unique([cartId,idempotencyKey])
+}
+model OrderItem {
+ id String @id @default(uuid())
+ orderId String
+ variantId String
+ productName String
+ sku String
+ sizeLabel String
+ unitPrice Int
+ quantity Int
+ order Order @relation(fields:[orderId], references:[id], onDelete:Cascade)
+ variant Variant @relation(fields:[variantId], references:[id])
+}

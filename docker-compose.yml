@@ -5,29 +5,18 @@ services:
       POSTGRES_DB: carpet
       POSTGRES_USER: carpet
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-only-change-me}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    volumes: [postgres_data:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U carpet -d carpet"]
       interval: 3s
       timeout: 3s
       retries: 20
-  migrate:
-    build: .
-    environment:
-      DATABASE_URL: postgresql+psycopg://carpet:${POSTGRES_PASSWORD:-local-only-change-me}@db:5432/carpet
-    command: alembic upgrade head
-    depends_on:
-      db:
-        condition: service_healthy
   api:
     build: .
-    ports: ["127.0.0.1:8000:8000"]
     env_file: .env
     environment:
-      DATABASE_URL: postgresql+psycopg://carpet:${POSTGRES_PASSWORD:-local-only-change-me}@db:5432/carpet
+      DATABASE_URL: postgresql://carpet:${POSTGRES_PASSWORD:-local-only-change-me}@db:5432/carpet
+    ports: ["127.0.0.1:8000:8000"]
     depends_on:
-      migrate:
-        condition: service_completed_successfully
-volumes:
-  postgres_data:
+      db: {condition: service_healthy}
+volumes: {postgres_data: {}}
