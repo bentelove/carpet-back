@@ -32,5 +32,5 @@ export async function checkoutRoutes(app: FastifyInstance) {
     } catch (error: any) { if (error.message === 'EMPTY_CART') return fail(reply, 409, 'EMPTY_CART', 'Корзина пуста'); if (error.message === 'CART_CHANGED') return fail(reply, 409, 'CART_CHANGED', 'Цены или остатки изменились'); throw error; }
   });
 }
-const zQuote = address.extend({ deliveryMethod: z.literal('manual_delivery') });
+const zQuote = z.object({ address, deliveryMethod: z.literal('manual_delivery') });
 async function cartData(id: string) { const c = await db.cart.findUnique({ where: { id }, include: { items: { include: { variant: { include: { product: true } } } } } }); const items = (c?.items || []).map(i => ({ id: i.id, variantId: i.variantId, productSlug: i.variant.product.slug, name: i.variant.product.name, sizeLabel: i.variant.sizeLabel, image: (i.variant.product.images as any[])?.[0]?.url || null, unitPrice: i.variant.price, quantity: i.quantity, lineTotal: i.variant.price * i.quantity, priceChanged: i.unitPrice !== i.variant.price, available: i.variant.stockQuantity })); const subtotal = items.reduce((s, i) => s + i.lineTotal, 0), delivery = subtotal >= threshold() ? 0 : fee(); return { items, currency: 'RUB', subtotal, delivery, total: subtotal + delivery, freeDeliveryThreshold: threshold(), amountToFreeDelivery: Math.max(0, threshold() - subtotal) }; }
